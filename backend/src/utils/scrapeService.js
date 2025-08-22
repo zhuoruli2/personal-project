@@ -15,7 +15,10 @@ class ScrapeService {
     try {
       // Load all active sources
       const sources = memoryStorage.getSources();
-      console.log(`Found ${sources.length} active sources`);
+      console.log(`Found ${sources.length} active sources:`);
+      sources.forEach(source => {
+        console.log(`  - ${source.displayName} (${source.name}) - active: ${source.isActive}`);
+      });
 
       // Schedule scraping for each source
       for (const source of sources) {
@@ -88,7 +91,7 @@ class ScrapeService {
 
   // Scrape a specific source
   async scrapeSource(source) {
-    console.log(`Starting scrape for ${source.displayName}...`);
+    console.log(`Starting scrape for ${source.displayName} (${source.name})...`);
     
     try {
       // Update scrape count and last scraped time

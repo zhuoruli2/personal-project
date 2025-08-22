@@ -132,10 +132,45 @@ class MotorTrendScraper extends BaseScraper {
                 }
               }
               
-              // Filter to only include recent articles (last 2 days)
-              const twoDaysAgo = new Date();
-              twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
-              const publishedAt = new Date(); // Default to now for Motor Trend
+              // Extract published date - try multiple approaches
+              let publishedAt = new Date(); // fallback to current date
+              
+              // Try to find date elements within this article
+              const dateSelectors = [
+                '.date',
+                '.published',
+                '.post-date', 
+                'time[datetime]',
+                '.meta-date',
+                '.article-date'
+              ];
+              
+              for (const dateSelector of dateSelectors) {
+                const dateElement = $element.find(dateSelector).first();
+                if (dateElement.length > 0) {
+                  const dateText = dateElement.attr('datetime') || dateElement.text().trim();
+                  if (dateText) {
+                    const parsedDate = new Date(dateText);
+                    // Only use parsed date if it's valid and not in future
+                    if (!isNaN(parsedDate.getTime()) && parsedDate <= new Date()) {
+                      publishedAt = parsedDate;
+                      break;
+                    }
+                  }
+                }
+              }
+              
+              // Fallback: extract date from URL if it has date pattern
+              if (publishedAt.toDateString() === new Date().toDateString() && articleUrl) {
+                const urlDateMatch = articleUrl.match(/\/(\d{4})\/(\d{1,2})\/(\d{1,2})\//);
+                if (urlDateMatch) {
+                  const [, year, month, day] = urlDateMatch;
+                  const urlDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+                  if (!isNaN(urlDate.getTime()) && urlDate <= new Date()) {
+                    publishedAt = urlDate;
+                  }
+                }
+              }
               
               if (title && articleUrl && title.length > 5) {
                 const article = {

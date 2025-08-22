@@ -122,16 +122,32 @@ class MemoryStorage {
 
   // Utility methods
   cleanOldArticles() {
-    // Temporarily disabled for debugging - keep all articles
-    console.log(`Current articles count: ${this.articles.length}`);
+    const beforeCount = this.articles.length;
     
-    // const twoDaysAgo = new Date();
-    // twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+    // Keep articles from the last 3 days for now to filter out old content
+    const threeDaysAgo = new Date();
+    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
     
-    // this.articles = this.articles.filter(article => {
-    //   const publishedDate = new Date(article.publishedAt);
-    //   return publishedDate >= twoDaysAgo;
-    // });
+    this.articles = this.articles.filter(article => {
+      const publishedDate = new Date(article.publishedAt);
+      const isRecent = publishedDate >= threeDaysAgo;
+      
+      // Log articles that are being filtered out for debugging
+      if (!isRecent) {
+        console.log(`Filtering out old article: "${article.title}" (${publishedDate.toDateString()}) from ${article.source?.displayName}`);
+      }
+      
+      return isRecent;
+    });
+    
+    const afterCount = this.articles.length;
+    const removedCount = beforeCount - afterCount;
+    
+    if (removedCount > 0) {
+      console.log(`Cleaned ${removedCount} old articles. Current articles count: ${afterCount}`);
+    } else {
+      console.log(`Current articles count: ${afterCount}`);
+    }
   }
 
   getStats() {
