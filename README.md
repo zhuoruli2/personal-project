@@ -54,6 +54,8 @@ CarNews Hub is a React Native application that scrapes and aggregates automotive
 └─────────────────────────────────────────────────────────────┘
 ```
 
+Note: This build uses in-memory storage on the backend; MongoDB is not used. Any MongoDB/Mongoose setup files present are placeholders for a future persistence upgrade and are not wired into the running server.
+
 ### Tech Stack
 
 #### Frontend (Mobile App)
@@ -68,7 +70,7 @@ CarNews Hub is a React Native application that scrapes and aggregates automotive
 - **Runtime**: Node.js
 - **Framework**: Express.js
 - **Web Scraping**: Puppeteer / Cheerio
-- **Database**: MongoDB with Mongoose ODM
+- **Storage**: In-memory (no MongoDB in this build)
 - **Task Scheduling**: Node-cron
 - **API Documentation**: Swagger
 
@@ -154,6 +156,15 @@ npm run dev
 ```
 The backend will start on `http://localhost:3000`
 
+#### Start Metro Bundler (React Native dev server)
+Metro serves and hot-reloads the JS bundle on port 8081.
+```bash
+cd mobile
+npm run start
+# or with cache reset if needed:
+# npx react-native start --reset-cache
+```
+
 #### Run the Mobile App
 
 **For Android:**
@@ -161,35 +172,51 @@ The backend will start on `http://localhost:3000`
 cd mobile
 npm run android
 ```
+Notes:
+- Ensure an emulator is running or a device is connected (`adb devices`).
+- The Android emulator accesses your machine's `localhost` via `10.0.2.2`. The app is already configured for this in development.
 
 **For iOS:**
 ```bash
 cd mobile
 npm run ios
 ```
+Notes:
+- iOS Simulator can access the backend at `http://localhost:3000`.
+- Metro must be running (see step above).
 
 ## 🔧 Configuration
 
 ### Backend Environment Variables
 
-The backend uses a `.env` file (already included):
+The backend uses a `.env` file (already included). This build does not connect to MongoDB; values like `MONGODB_URI` are currently unused.
 
 ```env
 PORT=3000
 NODE_ENV=development
 SCRAPING_INTERVAL=1800000  # 30 minutes
+# Optional/unused for this in-memory build:
+# MONGODB_URI=mongodb://localhost:27017/carnews
 ```
 
-**Note:** This version uses in-memory storage instead of MongoDB for simplicity. Data is refreshed every 30 minutes and only keeps articles from the last 2 days.
+**Note:** This version uses in-memory storage instead of MongoDB. Data is refreshed on a schedule (see `SCRAPING_INTERVAL`) and keeps only recent articles.
 
 ### Mobile App Configuration
 
-Update `mobile/src/config/api.js`:
+Development base URL differs by platform. In this repo, Android dev uses `10.0.2.2` to reach your machine's localhost.
+
+Example configuration for platform-aware base URL:
 
 ```javascript
-export const API_BASE_URL = __DEV__ 
-  ? 'http://localhost:3000/api'
-  : 'https://your-production-api.com/api';
+import { Platform } from 'react-native';
+
+const DEV_BASE = Platform.select({
+  android: 'http://10.0.2.2:3000/api', // Android emulator -> host machine
+  ios: 'http://localhost:3000/api',     // iOS simulator -> host machine
+  default: 'http://localhost:3000/api',
+});
+
+export const API_BASE_URL = __DEV__ ? DEV_BASE : 'https://your-production-api.com/api';
 ```
 
 ## 📡 API Endpoints
