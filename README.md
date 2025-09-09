@@ -46,11 +46,11 @@ CarNews Hub is a React Native application that scrapes and aggregates automotive
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    Database (MongoDB)                        │
-│  ┌──────────────┐  ┌──────────────┐  ┌─────────────────┐  │
-│  │   Articles   │  │   Sources    │  │     Users       │  │
-│  │  Collection  │  │  Collection  │  │   Collection    │  │
-│  └──────────────┘  └──────────────┘  └─────────────────┘  │
+│                    In-Memory Storage                         │
+│  ┌──────────────┐  ┌──────────────┐                        │
+│  │   Articles   │  │   Sources    │                        │
+│  │    (Array)   │  │    (Array)   │                        │
+│  └──────────────┘  └──────────────┘                        │
 └─────────────────────────────────────────────────────────────┘
 ```
 
