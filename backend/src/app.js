@@ -29,6 +29,7 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use('/api/articles', require('./routes/articles'));
 app.use('/api/sources', require('./routes/sources'));
+app.use('/api/bookmarks', require('./routes/bookmarks'));
 
 // Error handling middleware
 app.use((err, req, res, next) => {

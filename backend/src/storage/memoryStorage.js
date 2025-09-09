@@ -5,6 +5,8 @@ class MemoryStorage {
     this.sources = [];
     this.nextArticleId = 1;
     this.nextSourceId = 1;
+    // clientId -> Set of articleIds
+    this.bookmarks = new Map();
   }
 
   // Article methods
@@ -86,6 +88,36 @@ class MemoryStorage {
 
   getArticleById(id) {
     return this.articles.find(a => a.id === parseInt(id));
+  }
+
+  // Bookmark methods (anonymous, keyed by clientId)
+  getBookmarkIds(clientId) {
+    const set = this.bookmarks.get(clientId);
+    return set ? Array.from(set) : [];
+  }
+
+  getBookmarkedArticles(clientId) {
+    const ids = this.getBookmarkIds(clientId);
+    return ids
+      .map((id) => this.getArticleById(id))
+      .filter(Boolean);
+  }
+
+  addBookmark(clientId, articleId) {
+    const id = parseInt(articleId);
+    if (!this.getArticleById(id)) return false;
+    if (!this.bookmarks.has(clientId)) this.bookmarks.set(clientId, new Set());
+    const set = this.bookmarks.get(clientId);
+    set.add(id);
+    return true;
+  }
+
+  removeBookmark(clientId, articleId) {
+    const id = parseInt(articleId);
+    const set = this.bookmarks.get(clientId);
+    if (!set) return false;
+    const existed = set.delete(id);
+    return existed;
   }
 
   // Source methods

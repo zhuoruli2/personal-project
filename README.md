@@ -297,12 +297,11 @@ npm test
 - [x] Simplified demo version without database
 - [x] Auto-refreshing news (30-minute intervals)
 - [x] 2-day article retention
-- [x] Client-side bookmarking (AsyncStorage)
+- [x] Anonymous bookmarking (server + client cache)
 - [x] Cross-platform mobile app
 
 ### Phase 4: Future Enhancements
-- [ ] User authentication
-- [ ] Server-side bookmarks with user accounts (sync across devices)
+- [ ] Optional user accounts for cross-device sync and backup
 - [ ] Push notifications
 - [ ] Offline reading
 - [ ] Performance optimization
